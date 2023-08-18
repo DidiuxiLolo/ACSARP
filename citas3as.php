@@ -1,0 +1,140 @@
+<?php
+session_start();
+?>
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"> <!-- especificacion de html-->
+	<meta name="autor" content="Diana Lohra">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- dice como comportarse -->
+	<title>Instituto Tecnológico Campus Querétaro</title>
+    <link rel="icon" type="img/x-icon" href="img/favicon.ico">
+
+		<!--links de bootstrap y jquery-->
+    <link rel="stylesheet" href="css/bootstrap 5/bootstrap.min.css">
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<!--barrita de navegación-->	
+	<nav class="navbar navbar-expand-lg fixed-top navbar-light bg-light">
+	 	<div class="container-fluid bcontent">
+    	<a class="navbar-brand" href="#">TECNMCQ</a>
+    	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" 			aria-expanded="false" aria-label="Toggle navigation">
+    		<span class="navbar-toggler-icon"></span>
+    	</button>
+    	<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      		<div class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="mainpageas.php">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="controllers/residentesas.php">Residentes</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link active dropdown-toggle" data-toggle="dropdown" aria-current="page" href="#">Citas</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="citas1as.php">Agendar cita</a>
+                        <a class="dropdown-item" href="citas2as.php">Citas asignadas</a>
+                        <a class="dropdown-item" href="citas3as.php">Citas por aprobar</a>
+                        <a class="dropdown-item" href="citas4as.php">Reportes y cancelaciones de citas</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Cerrar Sesión</a>
+                </li>
+            </div>
+
+      	</div>
+  		</div>
+	</nav>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+
+<body>
+<div class="container">
+	<label class="citasagendadas">Citas pendientes por aprobar</label>
+</div>
+
+
+
+<?php
+
+
+//Nombre del server
+$serverName = "LAPTOP-QBNC713K\SQLEXPRESS";
+
+//Nombre de la base de datos
+$connectionInfo = array( "Database"=>"prueba");
+
+//Verifica la conexión con la base de datos
+$conn = sqlsrv_connect( $serverName, $connectionInfo);
+
+//Query para la base de datos
+$query= "SELECT * FROM citas WHERE idasesor = '".$_SESSION['idasesor']."'";
+
+//Verifica que haya una conexión con la base de datos y que se inserta el elemento en la bd y tabla solicitada
+$stmt = sqlsrv_query( $conn, $query, array(), array( "Scrollable" => SQLSRV_CURSOR_KEYSET ));
+
+echo "<table>";
+
+echo "<tr><th>Fecha</th><th>Hora</th><th>Asunto</th><th>Descripción</th></tr>";
+
+while($Row=sqlsrv_fetch_array($stmt)){
+
+    
+    echo "<tr><td>" . $Row['fecha']->format('Y-m-d') . "</td><td>" . $Row['hora']->format('H:i:s')
+     . "</td><td>" . $Row['asunto'] . "</td><td>" . $Row['descr'] . "</td></tr>";
+}   
+
+echo "</table>";
+
+?>
+<div class="container1">
+  <form action="controllers/citasAceptadas.php" method="POST">
+  
+  <div class="boton">
+    <input type="submit" onclick="myFunction()" class="BotonEnviar" value="Aceptar cita" style="width: 300px;">
+    <p id="demo"></p>
+
+<script>
+function myFunction() {
+  var txt;
+  if (confirm("Cita aceptada")) {
+    txt = "You pressed OK!";
+  } else {
+    txt = "You pressed Cancel!";
+  }
+  document.getElementById("demo").innerHTML = txt;
+}
+</script>
+  </div>
+  </form> 
+  <form action="controllers/citasDenegadas.php" method="POST">
+  
+  <div class="boton">
+    <input type="submit" onclick="myFunction2()" class="BotonEnviar" value="No aceptar cita" style="width: 300px;">
+    <p id="demo"></p>
+
+<script>
+function myFunction2() {
+  var txt;
+  if (confirm("Cita no aceptada")) {
+    txt = "You pressed OK!";
+  } else {
+    txt = "You pressed Cancel!";
+  }
+  document.getElementById("demo").innerHTML = txt;
+}
+</script>
+
+  </div>
+  </form>  
+  </div>
+
+
+</body>
+</html>
